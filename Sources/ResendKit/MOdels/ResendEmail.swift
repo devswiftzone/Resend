@@ -24,10 +24,10 @@ public struct ResendEmail: Codable {
     public var attachments: [EmailAttachment]?
     public var tags: [EmailTag]?
     
-    public init(object: String? = nil, id: String? = nil, createAt: String? = nil, from: String, to: [String], subject: String, bcc: [String]? = nil, cc: [String]? = nil, replyTo: [String]? = nil, html: String? = nil, text: String? = nil, headers: [String : String]? = nil, attachments: [EmailAttachment]? = nil, tags: [EmailTag]? = nil) {
+    public init(object: String? = nil, id: String? = nil, createdAt: String? = nil, from: String, to: [String], subject: String, bcc: [String]? = nil, cc: [String]? = nil, replyTo: [String]? = nil, html: String? = nil, text: String? = nil, headers: [String : String]? = nil, attachments: [EmailAttachment]? = nil, tags: [EmailTag]? = nil) {
         self.object = object
         self.id = id
-        self.createdAt = createAt
+        self.createdAt = createdAt
         self.from = from
         self.to = to
         self.subject = subject

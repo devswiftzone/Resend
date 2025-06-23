@@ -8,8 +8,8 @@
 import Foundation
 
 
-struct ResendRetrieveError: Codable, Error {
-    let statusCode:  Int
-    let message: String
-    let name: String
+public struct ResendRetrieveError: Codable, Error {
+    public let statusCode:  Int
+    public let message: String
+    public let name: String
 }

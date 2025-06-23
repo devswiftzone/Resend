@@ -8,5 +8,5 @@
 import Foundation
 
 public struct ResendEmailResponse: Codable {
-    let id: String
+    public let id: String
 }
