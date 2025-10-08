@@ -115,7 +115,7 @@ struct IntegrationTests {
             )
             
             
-            _ = try await resend.email.send(email: email)
+            return try await resend.email.send(email: email)
         }
 
         // Test domain client error
