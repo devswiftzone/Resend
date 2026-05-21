@@ -26,7 +26,7 @@ final class ResendTests: XCTestCase {
         httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
         
         // TODO: Replace with your API key to test!
-        _ = ResendClient(httpClient: httpClient, apiKey: "re_yJkoC4nC_BARJmtA1q5rkiapeAGb96gfN")
+        _ = ResendClient(httpClient: httpClient, apiKey: "")
     }
     
     override func tearDown() async throws {
