@@ -40,7 +40,7 @@ public protocol DomainClientProtocol {
 public protocol APIKeyClientProtocol {
     func create(name: String, permission: String?, domainId: String?) async throws -> ResendAPIKey
     func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendAPIKeyListItem>
-    func delete(id: String) async throws
+    func delete(id: String) async throws -> ResendDeleteResponse
 }
 
 /// Protocol for audience operations

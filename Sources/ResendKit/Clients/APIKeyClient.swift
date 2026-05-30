@@ -61,13 +61,13 @@ final class APIKeyClient: APIKeyClientProtocol {
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
-    public func delete(id: String) async throws {
+    public func delete(id: String) async throws -> ResendDeleteResponse {
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
             method: .DELETE,
             path: "api-keys/\(id)"
         )
-        let _: ResendDeleteResponse? = try? await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 }

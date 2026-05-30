@@ -90,14 +90,19 @@ struct APIKeyClientTests {
     @Test("Delete API key successfully")
     func testDeleteAPIKeySuccess() async throws {
         let mockHTTPClient = MockHTTPClient()
-        mockHTTPClient.addResponse(statusCode: 200, body: "")
+        let deleteJSON = """
+        {"object": "api_key", "id": "key_123", "deleted": true}
+        """
+        mockHTTPClient.addResponse(statusCode: 200, body: deleteJSON)
 
         let resendClient = ResendClient(
             apiKey: "test_api_key",
             httpClient: mockHTTPClient
         )
 
-        try await resendClient.apiKeys.delete(id: "key_123")
+        let response = try await resendClient.apiKeys.delete(id: "key_123")
+        #expect(response.deleted == true)
+        #expect(response.id == "key_123")
 
         let request = mockHTTPClient.requests[0]
         #expect(request.method == .DELETE)

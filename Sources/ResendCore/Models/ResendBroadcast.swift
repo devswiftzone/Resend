@@ -14,7 +14,7 @@ public struct ResendBroadcast: Codable, Sendable {
     public var audienceId: String?
     public var from: String?
     public var subject: String?
-    public var replyTo: String?
+    public var replyTo: [String]?
     public var previewText: String?
     public var status: String?
     public var createdAt: String?
@@ -28,7 +28,7 @@ public struct ResendBroadcast: Codable, Sendable {
         audienceId: String? = nil,
         from: String? = nil,
         subject: String? = nil,
-        replyTo: String? = nil,
+        replyTo: [String]? = nil,
         previewText: String? = nil,
         status: String? = nil,
         createdAt: String? = nil,
