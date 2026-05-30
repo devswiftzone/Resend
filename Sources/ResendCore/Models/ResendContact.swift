@@ -16,7 +16,7 @@ public struct ResendContact: Codable, Sendable {
     public var id: String
 
     /// Email address of the contact
-    public var email: String
+    public var email: String?
 
     /// First name of the contact
     public var firstName: String?
@@ -33,7 +33,7 @@ public struct ResendContact: Codable, Sendable {
     public init(
         object: String? = nil,
         id: String,
-        email: String,
+        email: String?,
         firstName: String? = nil,
         lastName: String? = nil,
         createdAt: String? = nil,

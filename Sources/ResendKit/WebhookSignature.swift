@@ -86,10 +86,20 @@ public enum WebhookSignature {
 
         let expectedSignatures = signatureHeader
             .split(separator: " ")
-            .compactMap { piece -> String? in
-                let parts = piece.split(separator: ",", maxSplits: 1)
-                guard parts.count == 2, parts[0] == "v1" else { return nil }
-                return String(parts[1])
+            .flatMap { piece -> [String] in
+                let token = String(piece)
+                if token.hasPrefix("v1=") {
+                    return [String(token.dropFirst(3))]
+                }
+                if token.hasPrefix("v1,") {
+                    return [String(token.dropFirst(3))]
+                }
+                return token.split(separator: ",").compactMap { part -> String? in
+                    let s = String(part)
+                    if s.hasPrefix("v1=") { return String(s.dropFirst(3)) }
+                    if s.hasPrefix("v1,") { return String(s.dropFirst(3)) }
+                    return nil
+                }
             }
 
         guard !expectedSignatures.isEmpty else {

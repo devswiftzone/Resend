@@ -40,7 +40,7 @@ import ResendCore
 /// let domain = try await resend.domains.create(name: "example.com", region: nil, customReturnPath: nil)
 /// let domains = try await resend.domains.list(limit: 10, after: nil, before: nil)
 /// ```
-public final class ResendClient: ResendClientProtocol {
+public final class ResendClient: ResendClientProtocol, Sendable {
 
     private let apiKey: String
     private let httpClient: HTTPClientProtocol

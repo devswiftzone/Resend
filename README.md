@@ -64,7 +64,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/Resend.git", from: "1.0.0")
+    .package(url: "https://github.com/devswiftzone/Resend.git", from: "1.0.0")
 ]
 ```
 
@@ -411,7 +411,7 @@ This project is licensed under the MIT License — see the LICENSE file for deta
 
 - [Resend Website](https://resend.com)
 - [Resend API Documentation](https://resend.com/docs)
-- [GitHub Repository](https://github.com/yourusername/Resend)
+- [GitHub Repository](https://github.com/devswiftzone/Resend)
 
 ## Acknowledgments
 

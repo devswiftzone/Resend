@@ -11,7 +11,7 @@ import Foundation
 ///
 /// Conforming types provide access to all Resend API operations through
 /// specialized sub-clients for each resource type.
-public protocol ResendClientProtocol {
+public protocol ResendClientProtocol: Sendable {
     /// Email operations (send, retrieve, schedule, cancel)
     var email: EmailClientProtocol { get }
 
@@ -36,8 +36,8 @@ public protocol ResendClientProtocol {
 
 /// Protocol for email operations.
 ///
-/// Provides methods for sending, retrieving, scheduling, and canceling emails.
-public protocol EmailClientProtocol {
+/// Provides methods for sending, retrieving, listing, scheduling, and canceling emails.
+public protocol EmailClientProtocol: Sendable {
     /// Send an email
     func send(email: ResendEmail) async throws -> ResendEmailResponse
     /// Retrieve a sent email by ID
@@ -48,12 +48,16 @@ public protocol EmailClientProtocol {
     func cancel(id: String) async throws -> ResendEmailResponse
     /// Send a batch of emails in a single API call
     func sendBatch(emails: [ResendEmail]) async throws -> ResendBatchResponse
+    /// List sent emails with cursor-based pagination
+    func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendEmail>
+    /// List all sent emails using automatic cursor pagination
+    func listAll(limit: Int?) -> PaginatedSequence<ResendEmail>
 }
 
 /// Protocol for domain operations.
 ///
 /// Provides methods for creating, verifying, and managing sending domains.
-public protocol DomainClientProtocol {
+public protocol DomainClientProtocol: Sendable {
     /// Create a new domain for sending emails
     func create(name: String, region: String?, customReturnPath: String?) async throws -> ResendDomain
     /// Retrieve a domain by ID
@@ -72,8 +76,8 @@ public protocol DomainClientProtocol {
 
 /// Protocol for API key operations.
 ///
-/// Provides methods for creating, listing, and deleting API keys.
-public protocol APIKeyClientProtocol {
+/// Provides methods for creating, retrieving, listing, and deleting API keys.
+public protocol APIKeyClientProtocol: Sendable {
     /// Create a new API key
     func create(name: String, permission: String?, domainId: String?) async throws -> ResendAPIKey
     /// List API keys with cursor-based pagination
@@ -86,8 +90,8 @@ public protocol APIKeyClientProtocol {
 
 /// Protocol for audience operations.
 ///
-/// Provides methods for creating and managing audience groups for broadcast campaigns.
-public protocol AudienceClientProtocol {
+/// Provides methods for creating, updating, and managing audience groups for broadcast campaigns.
+public protocol AudienceClientProtocol: Sendable {
     /// Create a new audience
     func create(name: String) async throws -> ResendAudience
     /// Retrieve an audience by ID
@@ -96,6 +100,8 @@ public protocol AudienceClientProtocol {
     func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendAudience>
     /// List all audiences using automatic cursor pagination
     func listAll(limit: Int?) -> PaginatedSequence<ResendAudience>
+    /// Update an audience's name
+    func update(id: String, name: String) async throws -> ResendAudience
     /// Delete an audience
     func delete(id: String) async throws -> ResendDeleteResponse
 }
@@ -103,7 +109,7 @@ public protocol AudienceClientProtocol {
 /// Protocol for contact operations.
 ///
 /// Provides methods for managing contacts within an audience.
-public protocol ContactClientProtocol {
+public protocol ContactClientProtocol: Sendable {
     /// Create a new contact in an audience
     func create(audienceId: String, email: String, firstName: String?, lastName: String?, unsubscribed: Bool?) async throws -> ResendContact
     /// Retrieve a contact by audience ID and contact identifier
@@ -122,7 +128,7 @@ public protocol ContactClientProtocol {
 ///
 /// Provides methods for creating and managing webhook endpoints
 /// that receive event notifications from Resend.
-public protocol WebhookClientProtocol {
+public protocol WebhookClientProtocol: Sendable {
     /// Create a new webhook endpoint
     func create(endpoint: String, events: [String]) async throws -> ResendWebhook
     /// Retrieve a webhook by ID
@@ -140,7 +146,7 @@ public protocol WebhookClientProtocol {
 /// Protocol for broadcast operations.
 ///
 /// Provides methods for creating and sending broadcast email campaigns to audiences.
-public protocol BroadcastClientProtocol {
+public protocol BroadcastClientProtocol: Sendable {
     /// Create a new broadcast campaign
     func create(audienceId: String, from: String, subject: String, replyTo: [String]?, html: String?, text: String?, name: String?) async throws -> ResendBroadcast
     /// Retrieve a broadcast by ID

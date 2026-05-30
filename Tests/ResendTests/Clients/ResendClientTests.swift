@@ -24,6 +24,7 @@ struct ResendClientTests {
         _ = client.audiences
         _ = client.contacts
         _ = client.broadcasts
+        _ = client.webhooks
     }
 
     @Test("Client initialization with custom HTTP client")

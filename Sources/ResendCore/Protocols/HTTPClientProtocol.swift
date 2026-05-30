@@ -19,7 +19,7 @@ public protocol HTTPClientProtocol: Sendable {
 }
 
 /// Represents an HTTP request to be sent to the Resend API.
-public struct HTTPRequest {
+public struct HTTPRequest: Sendable {
     /// The full URL for the request
     public let url: String
 
@@ -46,7 +46,7 @@ public struct HTTPRequest {
 }
 
 /// Represents an HTTP response from the Resend API.
-public struct HTTPResponse {
+public struct HTTPResponse: Sendable {
     /// The HTTP status code
     public let statusCode: Int
 
@@ -68,7 +68,7 @@ public struct HTTPResponse {
 }
 
 /// HTTP methods used by the Resend API.
-public enum HTTPMethod: String {
+public enum HTTPMethod: String, Sendable {
     case GET
     case POST
     case PATCH

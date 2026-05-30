@@ -183,7 +183,7 @@ enum TestData {
     // MARK: - Error Test Data
     static let errorJSON = """
     {
-        "status_code": 400,
+        "statusCode": 400,
         "message": "Invalid email address",
         "name": "validation_error"
     }

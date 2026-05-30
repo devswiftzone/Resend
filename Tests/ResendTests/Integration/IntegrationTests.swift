@@ -98,7 +98,7 @@ struct IntegrationTests {
 
         let errorJSON = """
         {
-            "status_code": 401,
+            "statusCode": 401,
             "message": "Invalid API key",
             "name": "unauthorized"
         }

@@ -17,7 +17,7 @@ Version 2.0 is a complete rewrite with:
 
 **Before (v1.x):**
 ```swift
-.package(url: "https://github.com/yourusername/Resend.git", from: "1.0.0")
+.package(url: "https://github.com/devswiftzone/Resend.git", from: "1.0.0")
 
 // In target dependencies
 .product(name: "Resend", package: "Resend")
@@ -25,7 +25,7 @@ Version 2.0 is a complete rewrite with:
 
 **After (v2.0):**
 ```swift
-.package(url: "https://github.com/yourusername/Resend.git", from: "2.0.0")
+.package(url: "https://github.com/devswiftzone/Resend.git", from: "2.0.0")
 
 // For iOS/macOS apps
 .product(name: "Resend", package: "Resend")
@@ -273,7 +273,7 @@ let cancelled = try await resend.email.cancel(id: "email_id")
 
 ```swift
 // Update version
-.package(url: "https://github.com/yourusername/Resend.git", from: "2.0.0")
+.package(url: "https://github.com/devswiftzone/Resend.git", from: "2.0.0")
 
 // For Vapor apps, change import
 .product(name: "ResendVapor", package: "Resend")  // was "Resend"
@@ -409,7 +409,7 @@ public func configure(_ app: Application) throws {
 If you encounter issues, you can rollback to v1.x:
 
 ```swift
-.package(url: "https://github.com/yourusername/Resend.git", from: "1.0.0")
+.package(url: "https://github.com/devswiftzone/Resend.git", from: "1.0.0")
 ```
 
 However, note that v1.x is no longer maintained and has limited functionality.
