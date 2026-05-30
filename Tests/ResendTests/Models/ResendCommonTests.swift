@@ -59,11 +59,10 @@ struct ResendCommonTests {
 
         let data = json.data(using: .utf8)!
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         let response = try decoder.decode(ResendListResponse<TestItem>.self, from: data)
 
-        #expect(response.data.count == 0)
+        #expect(response.data.isEmpty)
         #expect(response.hasMore == false)
     }
 
@@ -126,4 +125,3 @@ struct ResendCommonTests {
         requiresError(error)
     }
 }
-

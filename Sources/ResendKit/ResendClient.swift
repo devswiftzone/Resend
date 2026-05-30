@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logging
 import ResendCore
 
 /// Main Resend API client for sending emails and managing resources.
@@ -45,32 +46,44 @@ public final class ResendClient: ResendClientProtocol {
     private let httpClient: HTTPClientProtocol
     private let baseURL: String
 
+    /// Access email-related operations
     public let email: EmailClientProtocol
+    /// Access domain-related operations
     public let domains: DomainClientProtocol
+    /// Access API key management
     public let apiKeys: APIKeyClientProtocol
+    /// Access audience management
     public let audiences: AudienceClientProtocol
+    /// Access contact management
     public let contacts: ContactClientProtocol
+    /// Access broadcast campaign operations
     public let broadcasts: BroadcastClientProtocol
+    /// Access webhook management
+    public let webhooks: WebhookClientProtocol
 
-    /// Initialize a new Resend client
+    /// Initialize a new Resend client.
     /// - Parameters:
-    ///   - apiKey: Your Resend API key
-    ///   - httpClient: HTTP client implementation (defaults to URLSession)
-    ///   - retry: Optional retry configuration for automatic retries on failure
-    ///   - baseURL: Base API URL (defaults to https://api.resend.com)
+    ///   - apiKey: Your Resend API key from the Resend dashboard
+    ///   - httpClient: Custom HTTP client implementation (defaults to `URLSessionHTTPClient`)
+    ///   - retry: Optional retry configuration for automatic retries on transient failures and rate limits
+    ///   - logger: Optional swift-log `Logger` for HTTP request/response logging
+    ///   - baseURL: Base API URL (defaults to `https://api.resend.com`)
     public init(
         apiKey: String,
         httpClient: HTTPClientProtocol? = nil,
         retry: RetryConfiguration? = nil,
+        logger: Logger? = nil,
         baseURL: String = "https://api.resend.com"
     ) {
         self.apiKey = apiKey
-        let baseClient = httpClient ?? URLSessionHTTPClient()
+        var client = httpClient ?? URLSessionHTTPClient()
         if let retry = retry {
-            self.httpClient = RetryHTTPClient(wrapping: baseClient, configuration: retry)
-        } else {
-            self.httpClient = baseClient
+            client = RetryHTTPClient(wrapping: client, configuration: retry, logger: logger)
         }
+        if let logger = logger {
+            client = LoggingHTTPClient(wrapping: client, logger: logger)
+        }
+        self.httpClient = client
         self.baseURL = baseURL
 
         self.email = EmailClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
@@ -81,11 +94,14 @@ public final class ResendClient: ResendClientProtocol {
         self.contacts = ContactClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
         self.broadcasts = BroadcastClient(
             apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
+        self.webhooks = WebhookClient(
+            apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
     }
 }
 
 // MARK: - Request Builder
 extension ResendClient {
+    /// Build an authenticated HTTP request to the Resend API.
     static func buildRequest(
         apiKey: String,
         baseURL: String,
@@ -104,7 +120,7 @@ extension ResendClient {
 
         var headers = [
             "Authorization": "Bearer \(apiKey)",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
         ]
 
         for (key, value) in additionalHeaders {
@@ -127,7 +143,6 @@ extension ResendClient {
 
     static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
 }

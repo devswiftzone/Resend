@@ -6,21 +6,39 @@
 //
 
 import Foundation
+import Logging
 import ResendCore
 
-/// Configuration for retry behavior
+/// Configuration for retry behavior when API requests fail.
+///
+/// Use with `ResendClient.init(retry:)` to enable automatic retries with
+/// exponential backoff and optional jitter for transient failures.
+///
+/// ```swift
+/// let config = RetryConfiguration(
+///     maxRetries: 3,
+///     baseDelay: 1.0,
+///     maxDelay: 30.0,
+///     enableJitter: true
+/// )
+/// ```
 public struct RetryConfiguration: Sendable {
-    /// Maximum number of retry attempts
+    /// Maximum number of retry attempts before giving up
     public let maxRetries: Int
-    /// Base delay in seconds for exponential backoff
+
+    /// Base delay in seconds for exponential backoff (doubles with each retry)
     public let baseDelay: TimeInterval
-    /// Maximum delay in seconds between retries
+
+    /// Maximum delay in seconds between retries (caps exponential growth)
     public let maxDelay: TimeInterval
-    /// Whether to add random jitter to delays
+
+    /// Whether to add random jitter (up to 10% of delay) to prevent thundering herd
     public let enableJitter: Bool
-    /// HTTP status codes that trigger a retry
+
+    /// HTTP status codes that trigger a retry (default: 429, 502, 503, 504)
     public let retryableStatusCodes: Set<Int>
 
+    /// Default retry configuration: 3 retries, 1s base delay, 30s max, jitter enabled
     public static let `default` = RetryConfiguration(
         maxRetries: 3,
         baseDelay: 1.0,
@@ -29,6 +47,13 @@ public struct RetryConfiguration: Sendable {
         retryableStatusCodes: [429, 502, 503, 504]
     )
 
+    /// Create a custom retry configuration.
+    /// - Parameters:
+    ///   - maxRetries: Maximum number of retry attempts (default: 3)
+    ///   - baseDelay: Base delay in seconds (default: 1.0)
+    ///   - maxDelay: Maximum delay in seconds (default: 30.0)
+    ///   - enableJitter: Whether to add random jitter (default: true)
+    ///   - retryableStatusCodes: Status codes that trigger retry (default: 429, 502, 503, 504)
     public init(
         maxRetries: Int = 3,
         baseDelay: TimeInterval = 1.0,
@@ -44,16 +69,33 @@ public struct RetryConfiguration: Sendable {
     }
 }
 
-/// HTTP client decorator that adds retry logic with exponential backoff
+/// HTTP client decorator that adds retry logic with exponential backoff.
+///
+/// Wraps any `HTTPClientProtocol` and automatically retries failed requests
+/// based on the provided `RetryConfiguration`. Supports retry on both
+/// HTTP status codes (429, 5xx) and network errors (timeouts, connection loss).
 public final class RetryHTTPClient: HTTPClientProtocol {
     private let wrapped: HTTPClientProtocol
     private let configuration: RetryConfiguration
+    private let logger: Logger?
 
-    public init(wrapping client: HTTPClientProtocol, configuration: RetryConfiguration = .default) {
+    /// Create a retry-decorated HTTP client.
+    /// - Parameters:
+    ///   - client: The underlying HTTP client to wrap
+    ///   - configuration: Retry configuration (defaults to `RetryConfiguration.default`)
+    ///   - logger: Optional logger for retry event logging
+    public init(
+        wrapping client: HTTPClientProtocol,
+        configuration: RetryConfiguration = .default,
+        logger: Logger? = nil
+    ) {
         self.wrapped = client
         self.configuration = configuration
+        self.logger = logger
     }
 
+    /// Execute a request with automatic retry on failure.
+    /// Retries on configured status codes and transient network errors.
     public func execute(_ request: HTTPRequest) async throws -> HTTPResponse {
         var lastError: Error?
 
@@ -70,6 +112,9 @@ public final class RetryHTTPClient: HTTPClientProtocol {
                 }
 
                 let delay = calculateDelay(for: attempt, response: response)
+                logger?.warning(
+                    "\(request.method.rawValue) \(request.url) returned \(response.statusCode), retrying in \(String(format: "%.1f", delay))s (attempt \(attempt + 1)/\(configuration.maxRetries))"
+                )
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 lastError = nil
             } catch {
@@ -81,6 +126,9 @@ public final class RetryHTTPClient: HTTPClientProtocol {
                 }
 
                 let delay = calculateDelay(for: attempt, response: nil)
+                logger?.warning(
+                    "\(request.method.rawValue) \(request.url) failed: \(error.localizedDescription), retrying in \(String(format: "%.1f", delay))s (attempt \(attempt + 1)/\(configuration.maxRetries))"
+                )
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 lastError = error
             }
@@ -89,6 +137,7 @@ public final class RetryHTTPClient: HTTPClientProtocol {
         throw lastError ?? URLError(.unknown)
     }
 
+    /// Calculate delay with exponential backoff, optional jitter, and Retry-After support.
     private func calculateDelay(for attempt: Int, response: HTTPResponse?) -> TimeInterval {
         if let retryAfter = parseRetryAfter(response), attempt == 0 {
             return min(retryAfter, configuration.maxDelay)
@@ -104,6 +153,7 @@ public final class RetryHTTPClient: HTTPClientProtocol {
         (0..<attempt).reduce(1.0) { result, _ in result * 2.0 }
     }
 
+    /// Parse the Retry-After header if present.
     private func parseRetryAfter(_ response: HTTPResponse?) -> TimeInterval? {
         guard let value = response?.headers["Retry-After"] else { return nil }
         if let seconds = TimeInterval(value) { return seconds }
@@ -115,6 +165,7 @@ public final class RetryHTTPClient: HTTPClientProtocol {
         return nil
     }
 
+    /// Determine whether an error is transient and should be retried.
     private func isRetryableError(_ error: Error) -> Bool {
         if let urlError = error as? URLError {
             switch urlError.code {

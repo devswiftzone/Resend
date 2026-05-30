@@ -35,6 +35,8 @@ let package = Package(
             targets: ["Resend"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.10.0"),
         .package(url: "https://github.com/vapor/vapor.git", from: "4.66.1"),
     ],
     targets: [
@@ -46,7 +48,11 @@ let package = Package(
         // Kit: URLSession-based HTTP client
         .target(
             name: "ResendKit",
-            dependencies: ["ResendCore"]),
+            dependencies: [
+                "ResendCore",
+                .product(name: "Logging", package: "swift-log"),
+                .product(name: "Crypto", package: "swift-crypto"),
+            ]),
 
         // Vapor: Server-side integration
         .target(
@@ -68,7 +74,8 @@ let package = Package(
             dependencies: [
                 "Resend",
                 "ResendKit",
-                "ResendCore"
+                "ResendCore",
+                .product(name: "Crypto", package: "swift-crypto"),
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
