@@ -9,7 +9,7 @@ Add ResendVapor to your Vapor project's `Package.swift`:
 ```swift
 dependencies: [
     .package(url: "https://github.com/vapor/vapor.git", from: "4.66.1"),
-    .package(url: "https://github.com/yourusername/Resend.git", from: "1.0.0")
+    .package(url: "https://github.com/devswiftzone/Resend.git", from: "1.0.0")
 ],
 targets: [
     .target(
