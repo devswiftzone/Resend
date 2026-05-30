@@ -57,24 +57,17 @@ final class ContactClient: ContactClientProtocol {
     }
 
     public func list(audienceId: String, limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendContact> {
-        var queryItems: [String] = []
-        if let limit = limit {
-            queryItems.append("limit=\(limit)")
-        }
-        if let after = after {
-            queryItems.append("after=\(after)")
-        }
-        if let before = before {
-            queryItems.append("before=\(before)")
-        }
+        var query: [URLQueryItem] = []
+        if let limit = limit { query.append(URLQueryItem(name: "limit", value: String(limit))) }
+        if let after = after { query.append(URLQueryItem(name: "after", value: after)) }
+        if let before = before { query.append(URLQueryItem(name: "before", value: before)) }
 
-        let basePath = "audiences/\(audienceId)/contacts"
-        let path = queryItems.isEmpty ? basePath : "\(basePath)?\(queryItems.joined(separator: "&"))"
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
             method: .GET,
-            path: path
+            path: "audiences/\(audienceId)/contacts",
+            query: query
         )
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }

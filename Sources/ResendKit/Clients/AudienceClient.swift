@@ -46,23 +46,17 @@ final class AudienceClient: AudienceClientProtocol {
     }
 
     public func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendAudience> {
-        var queryItems: [String] = []
-        if let limit = limit {
-            queryItems.append("limit=\(limit)")
-        }
-        if let after = after {
-            queryItems.append("after=\(after)")
-        }
-        if let before = before {
-            queryItems.append("before=\(before)")
-        }
+        var query: [URLQueryItem] = []
+        if let limit = limit { query.append(URLQueryItem(name: "limit", value: String(limit))) }
+        if let after = after { query.append(URLQueryItem(name: "after", value: after)) }
+        if let before = before { query.append(URLQueryItem(name: "before", value: before)) }
 
-        let path = queryItems.isEmpty ? "audiences" : "audiences?\(queryItems.joined(separator: "&"))"
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
             method: .GET,
-            path: path
+            path: "audiences",
+            query: query
         )
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }

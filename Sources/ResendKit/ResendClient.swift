@@ -84,9 +84,17 @@ extension ResendClient {
         baseURL: String,
         method: HTTPMethod,
         path: String,
+        query: [URLQueryItem]? = nil,
         body: Data? = nil,
         additionalHeaders: [String: String] = [:]
     ) -> HTTPRequest {
+        var urlString = "\(baseURL)/\(path)"
+        if let query = query, !query.isEmpty {
+            var components = URLComponents(string: urlString)
+            components?.queryItems = query
+            urlString = components?.url?.absoluteString ?? urlString
+        }
+
         var headers = [
             "Authorization": "Bearer \(apiKey)",
             "Content-Type": "application/json",
@@ -97,7 +105,7 @@ extension ResendClient {
         }
 
         return HTTPRequest(
-            url: "\(baseURL)/\(path)",
+            url: urlString,
             method: method,
             headers: headers,
             body: body
