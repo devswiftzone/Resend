@@ -2,7 +2,7 @@ import Foundation
 import Logging
 import ResendCore
 
-final class LoggingHTTPClient: HTTPClientProtocol, @unchecked Sendable {
+final class LoggingHTTPClient: HTTPClientProtocol {
     private let wrapped: HTTPClientProtocol
     private let logger: Logger
 

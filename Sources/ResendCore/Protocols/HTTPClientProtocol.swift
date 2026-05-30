@@ -11,7 +11,7 @@ import Foundation
 ///
 /// Implement this protocol to provide custom HTTP transport for the Resend SDK.
 /// The SDK includes built-in implementations using URLSession and Vapor's client.
-public protocol HTTPClientProtocol {
+public protocol HTTPClientProtocol: Sendable {
     /// Execute an HTTP request and return the response.
     /// - Parameter request: The HTTP request to execute
     /// - Returns: The HTTP response
