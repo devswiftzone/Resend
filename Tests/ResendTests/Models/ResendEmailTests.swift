@@ -38,7 +38,7 @@ struct ResendEmailTests {
         let attachment = EmailAttachment(
             content: "base64content",
             filename: "test.pdf",
-            path: "test.pdf"
+            disposition: "attachment"
         )
 
         let tag = EmailTag(name: "category", value: "test")
@@ -46,7 +46,7 @@ struct ResendEmailTests {
         let email = ResendEmail(
             object: "email",
             id: "email_123",
-            createAt: "2025-01-01T00:00:00Z",
+            createdAt: "2025-01-01T00:00:00Z",
             from: "sender@test.com",
             to: ["recipient@test.com"],
             subject: "Test Subject",
@@ -102,7 +102,7 @@ struct ResendEmailTests {
         let email = ResendEmail(
             object: "email",
             id: "email_123",
-            createAt: "2025-01-01T00:00:00Z",
+            createdAt: "2025-01-01T00:00:00Z",
             from: "sender@test.com",
             to: ["recipient@test.com"],
             subject: "Test",

@@ -18,10 +18,4 @@ public struct ResendRetrieveError: Codable, Sendable, Error {
         self.message = message
         self.name = name
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case statusCode = "statusCode"
-        case message
-        case name
-    }
 }

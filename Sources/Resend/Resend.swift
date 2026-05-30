@@ -6,5 +6,6 @@
 //
 
 // Re-export ResendCore and ResendKit for convenience
-@_exported import ResendCore
-@_exported import ResendKit
+// Using public import (stable since Swift 5.9) instead of @_exported import (private feature)
+public import ResendCore
+public import ResendKit

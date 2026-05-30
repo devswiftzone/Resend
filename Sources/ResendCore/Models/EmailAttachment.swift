@@ -16,23 +16,22 @@ public struct EmailAttachment: Codable, Sendable {
     public var filename: String
     
     /// The content-disposition of the attachment specifying how you would like the attachment to be displayed.
-    public var path: String
-   
+    public var disposition: String
+    
     public init(
         content: String,
         filename: String,
-        path: String
-       
+        disposition: String = "attachment"
     ) {
         self.content = content
         self.filename = filename
-        self.path = path
+        self.disposition = disposition
     }
     
     private enum CodingKeys: String, CodingKey {
         case content
         case filename
-        case path
+        case disposition = "path"
     }
     
 }

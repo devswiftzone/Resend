@@ -69,9 +69,11 @@ public final class ResendClient: ResendClientProtocol {
         self.email = EmailClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
         self.domains = DomainClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
         self.apiKeys = APIKeyClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
-        self.audiences = AudienceClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
+        self.audiences = AudienceClient(
+            apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
         self.contacts = ContactClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
-        self.broadcasts = BroadcastClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
+        self.broadcasts = BroadcastClient(
+            apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
     }
 }
 
@@ -87,7 +89,7 @@ extension ResendClient {
     ) -> HTTPRequest {
         var headers = [
             "Authorization": "Bearer \(apiKey)",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
 
         for (key, value) in additionalHeaders {

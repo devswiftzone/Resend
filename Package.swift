@@ -10,7 +10,8 @@ let package = Package(
         .iOS(.v16),
         .tvOS(.v16),
         .watchOS(.v9),
-        .macCatalyst(.v16)
+        .macCatalyst(.v16),
+        .visionOS(.v1),
     ],
     products: [
         // Core models and protocols (no dependencies)

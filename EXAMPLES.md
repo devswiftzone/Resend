@@ -46,8 +46,7 @@ let base64Content = fileData.base64EncodedString()
 
 let attachment = EmailAttachment(
     content: base64Content,
-    filename: "invoice.pdf",
-    path: "invoice.pdf"
+    filename: "invoice.pdf"
 )
 
 let email = ResendEmail(

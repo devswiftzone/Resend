@@ -181,8 +181,7 @@ func routes(_ app: Application) throws {
 ```swift
 let attachment = EmailAttachment(
     content: "base64_encoded_content",
-    filename: "invoice.pdf",
-    path: "invoice.pdf"
+    filename: "invoice.pdf"
 )
 
 let email = ResendEmail(
