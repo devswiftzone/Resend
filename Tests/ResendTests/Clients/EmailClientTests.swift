@@ -96,8 +96,7 @@ struct EmailClientTests {
     @Test("Send email network error")
     func sendEmailNetworkError() async throws {
         let mockHTTPClient = MockHTTPClient()
-        mockHTTPClient.shouldThrowError = true
-        mockHTTPClient.errorToThrow = URLError(.notConnectedToInternet)
+        mockHTTPClient.addError(URLError(.notConnectedToInternet))
 
         let resendClient = ResendClient(
             apiKey: "test_api_key",

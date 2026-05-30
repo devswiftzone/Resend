@@ -56,14 +56,21 @@ public final class ResendClient: ResendClientProtocol {
     /// - Parameters:
     ///   - apiKey: Your Resend API key
     ///   - httpClient: HTTP client implementation (defaults to URLSession)
+    ///   - retry: Optional retry configuration for automatic retries on failure
     ///   - baseURL: Base API URL (defaults to https://api.resend.com)
     public init(
         apiKey: String,
         httpClient: HTTPClientProtocol? = nil,
+        retry: RetryConfiguration? = nil,
         baseURL: String = "https://api.resend.com"
     ) {
         self.apiKey = apiKey
-        self.httpClient = httpClient ?? URLSessionHTTPClient()
+        let baseClient = httpClient ?? URLSessionHTTPClient()
+        if let retry = retry {
+            self.httpClient = RetryHTTPClient(wrapping: baseClient, configuration: retry)
+        } else {
+            self.httpClient = baseClient
+        }
         self.baseURL = baseURL
 
         self.email = EmailClient(apiKey: apiKey, httpClient: self.httpClient, baseURL: baseURL)
