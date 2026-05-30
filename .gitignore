@@ -1,8 +1,66 @@
+# macOS
 .DS_Store
-/.build
-/Packages
+.DS_Store?
+.AppleDouble
+.LSOverride
+Icon?
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Xcode
 xcuserdata/
 DerivedData/
+*.xcworkspace
+*.xcuserstate
+*.xcbkptlist
+*.xcodespec
+*.xcappdata
+*.xcscheme
+!*.xcscheme
+build/
+
+# Swift Package Manager
+.build/
+Packages/
+*.swp
+*.swo
+
+# SwiftLint
+.swiftlint.xcconfig
+
+# Documentation
+.docc-build/
+.docc-output/
+docs/
+
+# Testing
+.spi.yml
+.spi
+
+# Environment & Secrets
+*.env
+.env.*
+.netrc
+*.p8
+*.p12
+*.certSigningRequest
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.sw?
+.vs/
+*.sublime-workspace
+
+# SwiftPM configuration
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
+.swiftpm/xcode/package.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# Generated files
+*.generated.swift
+
+# Logs
+*.log
