@@ -150,4 +150,103 @@ struct WebhookSignatureTests {
 
         #expect(result == true)
     }
+
+    @Test("Multiple signatures all invalid")
+    func testAllInvalidSignatures() {
+        let multipleHeaders = "v1,fakesig1= v1,fakesig2="
+
+        #expect(throws: WebhookVerificationError.invalidSignature) {
+            try WebhookSignature.verify(
+                payload: testPayload,
+                id: testId,
+                timestamp: testTimestamp,
+                signatureHeader: multipleHeaders,
+                secret: testSecret,
+                tolerance: nil
+            )
+        }
+    }
+
+    @Test("Rejects future timestamp")
+    func testFutureTimestamp() {
+        let futureTimestamp = "1999999999"  // Year 2033
+
+        #expect(throws: WebhookVerificationError.timestampTooOld) {
+            try WebhookSignature.verify(
+                payload: testPayload,
+                id: testId,
+                timestamp: futureTimestamp,
+                signatureHeader: "v1,test",
+                secret: testSecret,
+                tolerance: 300
+            )
+        }
+    }
+
+    @Test("Accepts empty payload")
+    func testEmptyPayload() throws {
+        let signature = makeSignature(secret: testSecret, id: testId, timestamp: testTimestamp, payload: "")
+
+        let result = try WebhookSignature.verify(
+            payload: "",
+            id: testId,
+            timestamp: testTimestamp,
+            signatureHeader: signature,
+            secret: testSecret,
+            tolerance: nil
+        )
+
+        #expect(result == true)
+    }
+
+    @Test("Skips timestamp check when tolerance is nil")
+    func testSkipTimestampCheck() throws {
+        let oldTimestamp = "1000000000"  // Year 2001
+        let signature = makeSignature(secret: testSecret, id: testId, timestamp: oldTimestamp, payload: testPayload)
+
+        let result = try WebhookSignature.verify(
+            payload: testPayload,
+            id: testId,
+            timestamp: oldTimestamp,
+            signatureHeader: signature,
+            secret: testSecret,
+            tolerance: nil
+        )
+
+        #expect(result == true)
+    }
+
+    @Test("Throws on invalid base64 secret")
+    func testInvalidSecret() {
+        let invalidSecret = "not-valid-base64!!!"
+        let signature = "v1,test"
+
+        #expect(throws: WebhookVerificationError.invalidSecret) {
+            try WebhookSignature.verify(
+                payload: testPayload,
+                id: testId,
+                timestamp: testTimestamp,
+                signatureHeader: signature,
+                secret: invalidSecret,
+                tolerance: nil
+            )
+        }
+    }
+
+    @Test("Signature header with trailing spaces")
+    func testSignatureTrailingSpaces() throws {
+        let validSig = makeSignature(secret: testSecret, id: testId, timestamp: testTimestamp, payload: testPayload)
+        let signatureWithSpaces = "  \(validSig)  "
+
+        let result = try WebhookSignature.verify(
+            payload: testPayload,
+            id: testId,
+            timestamp: testTimestamp,
+            signatureHeader: signatureWithSpaces,
+            secret: testSecret,
+            tolerance: nil
+        )
+
+        #expect(result == true)
+    }
 }

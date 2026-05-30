@@ -53,7 +53,7 @@ public final class PaginatedSequence<T: Codable & Sendable>: AsyncSequence, @unc
         /// Advance to the next element, fetching a new page if the current queue is exhausted.
         /// - Returns: The next element, or `nil` when all pages have been consumed.
         public func next() async throws -> T? {
-            if isDone { return nil }
+            if isDone && queue.isEmpty { return nil }
 
             if queue.isEmpty {
                 let (items, hasMore, nextCursor) = try await fetchPage(cursor)

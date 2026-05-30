@@ -119,4 +119,72 @@ struct RetryHTTPClientTests {
         let domain = try await client.domains.get(id: "domain_123")
         #expect(domain.id == "domain_123")
     }
+
+    // MARK: - Parameterized Retry Tests
+
+    @Test("Retries on server error status codes", arguments: [502, 503, 504])
+    func testRetryOnServerError(statusCode: Int) async throws {
+        let mock = MockHTTPClient()
+        mock.addResponse(statusCode: statusCode, body: "{}")
+        mock.addResponse(statusCode: 200, body: "{\"id\": \"test\"}")
+
+        let config = RetryConfiguration(maxRetries: 1, baseDelay: 0.01, maxDelay: 0.1, enableJitter: false)
+        let retry = RetryHTTPClient(wrapping: mock, configuration: config)
+        let request = HTTPRequest(url: "https://api.test.com/test", method: .GET)
+        let response = try await retry.execute(request)
+
+        #expect(response.statusCode == 200)
+        #expect(mock.requests.count == 2)
+    }
+
+    @Test("Does not retry non-retryable status codes", arguments: [300, 301, 401, 403, 404, 500])
+    func testNoRetryOnNonRetryable(statusCode: Int) async throws {
+        let mock = MockHTTPClient()
+        mock.addResponse(statusCode: statusCode, body: "{}")
+
+        let config = RetryConfiguration(maxRetries: 3, baseDelay: 0.01, maxDelay: 0.1, enableJitter: false)
+        let retry = RetryHTTPClient(wrapping: mock, configuration: config)
+        let request = HTTPRequest(url: "https://api.test.com/test", method: .GET)
+        let response = try await retry.execute(request)
+
+        #expect(response.statusCode == statusCode)
+        #expect(mock.requests.count == 1)
+    }
+
+    @Test("Retryable network errors", arguments: [
+        URLError(.timedOut),
+        URLError(.networkConnectionLost),
+        URLError(.notConnectedToInternet),
+        URLError(.cannotConnectToHost),
+        URLError(.dnsLookupFailed)
+    ])
+    func testRetryOnNetworkErrors(error: URLError) async throws {
+        let mock = MockHTTPClient()
+        mock.addError(error)
+        mock.addResponse(statusCode: 200, body: "{\"id\": \"test\"}")
+
+        let config = RetryConfiguration(maxRetries: 1, baseDelay: 0.01, maxDelay: 0.1, enableJitter: false)
+        let retry = RetryHTTPClient(wrapping: mock, configuration: config)
+        let request = HTTPRequest(url: "https://api.test.com/test", method: .GET)
+        let response = try await retry.execute(request)
+
+        #expect(response.statusCode == 200)
+        #expect(mock.requests.count == 2)
+    }
+
+    @Test("Retry with jitter enabled uses varying delays")
+    func testRetryWithJitter() async throws {
+        let mock = MockHTTPClient()
+        mock.addResponse(statusCode: 429, body: "{}")
+        mock.addResponse(statusCode: 429, body: "{}")
+        mock.addResponse(statusCode: 200, body: "{\"id\": \"test\"}")
+
+        let config = RetryConfiguration(maxRetries: 2, baseDelay: 0.5, maxDelay: 2.0, enableJitter: true)
+        let retry = RetryHTTPClient(wrapping: mock, configuration: config)
+        let request = HTTPRequest(url: "https://api.test.com/test", method: .GET)
+        let response = try await retry.execute(request)
+
+        #expect(response.statusCode == 200)
+        #expect(mock.requests.count == 3)
+    }
 }
