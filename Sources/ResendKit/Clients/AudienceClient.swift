@@ -8,6 +8,10 @@
 import Foundation
 import ResendCore
 
+private struct CreateAudienceRequest: Encodable {
+    let name: String
+}
+
 final class AudienceClient: AudienceClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -20,9 +24,7 @@ final class AudienceClient: AudienceClientProtocol {
     }
 
     public func create(name: String) async throws -> ResendAudience {
-        let payload = ["name": name]
-        let body = try JSONSerialization.data(withJSONObject: payload)
-
+        let body = try ResendClient.encoder.encode(CreateAudienceRequest(name: name))
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,

@@ -8,6 +8,10 @@
 import Foundation
 import ResendCore
 
+private struct UpdateEmailRequest: Encodable {
+    let scheduledAt: String
+}
+
 final class EmailClient: EmailClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -42,8 +46,7 @@ final class EmailClient: EmailClientProtocol {
     }
 
     public func update(id: String, scheduledAt: String) async throws -> ResendEmailResponse {
-        let payload = ["scheduled_at": scheduledAt]
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(UpdateEmailRequest(scheduledAt: scheduledAt))
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,

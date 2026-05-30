@@ -8,6 +8,30 @@
 import Foundation
 import ResendCore
 
+private struct CreateBroadcastRequest: Encodable {
+    let audienceId: String
+    let from: String
+    let subject: String
+    let replyTo: [String]?
+    let html: String?
+    let text: String?
+    let name: String?
+}
+
+private struct UpdateBroadcastRequest: Encodable {
+    let audienceId: String?
+    let from: String?
+    let subject: String?
+    let replyTo: [String]?
+    let html: String?
+    let text: String?
+    let name: String?
+}
+
+private struct SendBroadcastRequest: Encodable {
+    let scheduledAt: String?
+}
+
 final class BroadcastClient: BroadcastClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -20,26 +44,12 @@ final class BroadcastClient: BroadcastClientProtocol {
     }
 
     public func create(audienceId: String, from: String, subject: String, replyTo: [String]?, html: String?, text: String?, name: String?) async throws -> ResendBroadcast {
-        var payload: [String: Any] = [
-            "audience_id": audienceId,
-            "from": from,
-            "subject": subject
-        ]
-
-        if let replyTo = replyTo {
-            payload["reply_to"] = replyTo
-        }
-        if let html = html {
-            payload["html"] = html
-        }
-        if let text = text {
-            payload["text"] = text
-        }
-        if let name = name {
-            payload["name"] = name
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            CreateBroadcastRequest(
+                audienceId: audienceId, from: from, subject: subject,
+                replyTo: replyTo, html: html, text: text, name: name
+            )
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
@@ -83,31 +93,12 @@ final class BroadcastClient: BroadcastClientProtocol {
     }
 
     public func update(id: String, audienceId: String?, from: String?, subject: String?, replyTo: [String]?, html: String?, text: String?, name: String?) async throws -> ResendBroadcast {
-        var payload: [String: Any] = [:]
-
-        if let audienceId = audienceId {
-            payload["audience_id"] = audienceId
-        }
-        if let from = from {
-            payload["from"] = from
-        }
-        if let subject = subject {
-            payload["subject"] = subject
-        }
-        if let replyTo = replyTo {
-            payload["reply_to"] = replyTo
-        }
-        if let html = html {
-            payload["html"] = html
-        }
-        if let text = text {
-            payload["text"] = text
-        }
-        if let name = name {
-            payload["name"] = name
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            UpdateBroadcastRequest(
+                audienceId: audienceId, from: from, subject: subject,
+                replyTo: replyTo, html: html, text: text, name: name
+            )
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
@@ -119,12 +110,7 @@ final class BroadcastClient: BroadcastClientProtocol {
     }
 
     public func send(id: String, scheduledAt: String?) async throws -> ResendBroadcastSendResponse {
-        var payload: [String: Any] = [:]
-        if let scheduledAt = scheduledAt {
-            payload["scheduled_at"] = scheduledAt
-        }
-
-        let body = payload.isEmpty ? nil : try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(SendBroadcastRequest(scheduledAt: scheduledAt))
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,

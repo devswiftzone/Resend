@@ -8,6 +8,19 @@
 import Foundation
 import ResendCore
 
+private struct CreateContactRequest: Encodable {
+    let email: String
+    let firstName: String?
+    let lastName: String?
+    let unsubscribed: Bool?
+}
+
+private struct UpdateContactRequest: Encodable {
+    let firstName: String?
+    let lastName: String?
+    let unsubscribed: Bool?
+}
+
 final class ContactClient: ContactClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -20,18 +33,9 @@ final class ContactClient: ContactClientProtocol {
     }
 
     public func create(audienceId: String, email: String, firstName: String?, lastName: String?, unsubscribed: Bool?) async throws -> ResendContact {
-        var payload: [String: Any] = ["email": email]
-        if let firstName = firstName {
-            payload["first_name"] = firstName
-        }
-        if let lastName = lastName {
-            payload["last_name"] = lastName
-        }
-        if let unsubscribed = unsubscribed {
-            payload["unsubscribed"] = unsubscribed
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            CreateContactRequest(email: email, firstName: firstName, lastName: lastName, unsubscribed: unsubscribed)
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
@@ -76,18 +80,9 @@ final class ContactClient: ContactClientProtocol {
     }
 
     public func update(audienceId: String, identifier: String, firstName: String?, lastName: String?, unsubscribed: Bool?) async throws -> ResendContact {
-        var payload: [String: Any] = [:]
-        if let firstName = firstName {
-            payload["first_name"] = firstName
-        }
-        if let lastName = lastName {
-            payload["last_name"] = lastName
-        }
-        if let unsubscribed = unsubscribed {
-            payload["unsubscribed"] = unsubscribed
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            UpdateContactRequest(firstName: firstName, lastName: lastName, unsubscribed: unsubscribed)
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,

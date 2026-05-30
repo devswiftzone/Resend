@@ -8,6 +8,18 @@
 import Foundation
 import ResendCore
 
+private struct CreateDomainRequest: Encodable {
+    let name: String
+    let region: String?
+    let customReturnPath: String?
+}
+
+private struct UpdateDomainRequest: Encodable {
+    let clickTracking: Bool?
+    let openTracking: Bool?
+    let tls: String?
+}
+
 final class DomainClient: DomainClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -20,15 +32,9 @@ final class DomainClient: DomainClientProtocol {
     }
 
     public func create(name: String, region: String?, customReturnPath: String?) async throws -> ResendDomain {
-        var payload: [String: Any] = ["name": name]
-        if let region = region {
-            payload["region"] = region
-        }
-        if let customReturnPath = customReturnPath {
-            payload["custom_return_path"] = customReturnPath
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            CreateDomainRequest(name: name, region: region, customReturnPath: customReturnPath)
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
@@ -82,18 +88,9 @@ final class DomainClient: DomainClientProtocol {
     }
 
     public func update(id: String, clickTracking: Bool?, openTracking: Bool?, tls: String?) async throws -> ResendDomain {
-        var payload: [String: Any] = [:]
-        if let clickTracking = clickTracking {
-            payload["click_tracking"] = clickTracking
-        }
-        if let openTracking = openTracking {
-            payload["open_tracking"] = openTracking
-        }
-        if let tls = tls {
-            payload["tls"] = tls
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            UpdateDomainRequest(clickTracking: clickTracking, openTracking: openTracking, tls: tls)
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,

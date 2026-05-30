@@ -8,6 +8,12 @@
 import Foundation
 import ResendCore
 
+private struct CreateAPIKeyRequest: Encodable {
+    let name: String
+    let permission: String?
+    let domainId: String?
+}
+
 final class APIKeyClient: APIKeyClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -20,15 +26,9 @@ final class APIKeyClient: APIKeyClientProtocol {
     }
 
     public func create(name: String, permission: String?, domainId: String?) async throws -> ResendAPIKey {
-        var payload: [String: Any] = ["name": name]
-        if let permission = permission {
-            payload["permission"] = permission
-        }
-        if let domainId = domainId {
-            payload["domain_id"] = domainId
-        }
-
-        let body = try JSONSerialization.data(withJSONObject: payload)
+        let body = try ResendClient.encoder.encode(
+            CreateAPIKeyRequest(name: name, permission: permission, domainId: domainId)
+        )
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
