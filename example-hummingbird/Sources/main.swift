@@ -10,14 +10,17 @@ guard let apiKey = ProcessInfo.processInfo.environment["RESEND_API_KEY"], !apiKe
 let fromEmail = ProcessInfo.processInfo.environment["FROM_EMAIL"] ?? "hello@swiftzone.dev"
 let port = ProcessInfo.processInfo.environment["PORT"].flatMap(Int.init) ?? 3000
 
+// MARK: - Setup Resend client (direct)
+let resend = ResendClient(
+    apiKey: apiKey,
+    httpClient: HummingbirdHTTPClient(),
+    retry: RetryConfiguration(maxRetries: 2)
+)
+
+// MARK: - Router
 var router = Router()
-var app = Application(router: router)
-app.configuration.address = .hostname("0.0.0.0", port: port)
 
-app.resend.initialize(apiKey: apiKey)
-let resend = app.resend.client
-
-// MARK: - POST /send — Send a simple email
+// POST /send — Send a simple email
 router.post("send") { _, _ -> String in
     let email = ResendEmail(
         from: fromEmail,
@@ -33,7 +36,7 @@ router.post("send") { _, _ -> String in
     }
 }
 
-// MARK: - GET /emails — List recent emails
+// GET /emails — List recent emails
 router.get("emails") { _, _ -> String in
     do {
         let list = try await resend.email.list(limit: 5, after: nil, before: nil)
@@ -44,7 +47,7 @@ router.get("emails") { _, _ -> String in
     }
 }
 
-// MARK: - GET /domains — List verified domains
+// GET /domains — List verified domains
 router.get("domains") { _, _ -> String in
     do {
         let list = try await resend.domains.list(limit: 10, after: nil, before: nil)
@@ -55,12 +58,19 @@ router.get("domains") { _, _ -> String in
     }
 }
 
-// MARK: - GET /health — Health check
+// GET /health — Health check
 router.get("health") { _, _ -> HTTPResponse.Status in
     return .ok
 }
 
-print("🚀 Hummingbird + Resend server starting on http://localhost:\(port)")
+// MARK: - Application
+var app = Application(router: router)
+app.configuration.address = .hostname("127.0.0.1", port: port)
+
+// Also init via Application extension for demo (alternative access pattern)
+app.resend.initialize(apiKey: apiKey)
+
+print("Hummingbird + Resend server on http://localhost:\(port)")
 print("   POST /send    — Send an email")
 print("   GET  /emails  — List recent emails")
 print("   GET  /domains — List domains")
