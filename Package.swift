@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Resend",
     platforms: [
-        .macOS(.v13),
+        .macOS(.v14),
         .iOS(.v16),
         .tvOS(.v16),
         .watchOS(.v9),
@@ -29,6 +29,11 @@ let package = Package(
             name: "ResendVapor",
             targets: ["ResendVapor"]),
 
+        // Hummingbird integration for server-side
+        .library(
+            name: "ResendHummingbird",
+            targets: ["ResendHummingbird"]),
+
         // Convenience re-export module
         .library(
             name: "Resend",
@@ -38,6 +43,9 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.10.0"),
         .package(url: "https://github.com/vapor/vapor.git", from: "4.66.1"),
+        .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.30.0"),
+        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.70.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin.git", from: "1.4.0"),
     ],
     targets: [
@@ -69,6 +77,17 @@ let package = Package(
             name: "Resend",
             dependencies: ["ResendCore", "ResendKit"]),
 
+        // Hummingbird: Server-side integration
+        .target(
+            name: "ResendHummingbird",
+            dependencies: [
+                "ResendCore",
+                "ResendKit",
+                .product(name: "Hummingbird", package: "hummingbird"),
+                .product(name: "AsyncHTTPClient", package: "async-http-client"),
+                .product(name: "NIOCore", package: "swift-nio"),
+            ]),
+
         // Tests using Swift Testing framework
         .testTarget(
             name: "ResendTests",
@@ -91,6 +110,22 @@ let package = Package(
                 "ResendCore",
                 "ResendKit",
                 .product(name: "Vapor", package: "vapor"),
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency"),
+            ]
+        ),
+
+        // Hummingbird integration tests
+        .testTarget(
+            name: "ResendHummingbirdTests",
+            dependencies: [
+                "ResendHummingbird",
+                "ResendCore",
+                "ResendKit",
+                .product(name: "Hummingbird", package: "hummingbird"),
+                .product(name: "AsyncHTTPClient", package: "async-http-client"),
+                .product(name: "NIOCore", package: "swift-nio"),
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency"),
