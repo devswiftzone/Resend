@@ -47,21 +47,7 @@ final class BroadcastClient: BroadcastClientProtocol {
             path: "broadcasts",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendBroadcast.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func get(id: String) async throws -> ResendBroadcast {
@@ -71,21 +57,7 @@ final class BroadcastClient: BroadcastClientProtocol {
             method: .GET,
             path: "broadcasts/\(id)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendBroadcast.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendBroadcast> {
@@ -107,21 +79,7 @@ final class BroadcastClient: BroadcastClientProtocol {
             method: .GET,
             path: path
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendListResponse<ResendBroadcast>.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func update(id: String, audienceId: String?, from: String?, subject: String?, replyTo: [String]?, html: String?, text: String?, name: String?) async throws -> ResendBroadcast {
@@ -157,21 +115,7 @@ final class BroadcastClient: BroadcastClientProtocol {
             path: "broadcasts/\(id)",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendBroadcast.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func send(id: String, scheduledAt: String?) async throws -> ResendBroadcastSendResponse {
@@ -188,21 +132,7 @@ final class BroadcastClient: BroadcastClientProtocol {
             path: "broadcasts/\(id)/send",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendBroadcastSendResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func delete(id: String) async throws -> ResendDeleteResponse {
@@ -212,20 +142,6 @@ final class BroadcastClient: BroadcastClientProtocol {
             method: .DELETE,
             path: "broadcasts/\(id)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDeleteResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 }

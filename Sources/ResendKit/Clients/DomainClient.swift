@@ -36,21 +36,7 @@ final class DomainClient: DomainClientProtocol {
             path: "domains",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDomain.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func get(id: String) async throws -> ResendDomain {
@@ -60,21 +46,7 @@ final class DomainClient: DomainClientProtocol {
             method: .GET,
             path: "domains/\(id)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDomain.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendDomain> {
@@ -96,21 +68,7 @@ final class DomainClient: DomainClientProtocol {
             method: .GET,
             path: path
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendListResponse<ResendDomain>.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func verify(id: String) async throws -> ResendDomain {
@@ -120,21 +78,7 @@ final class DomainClient: DomainClientProtocol {
             method: .POST,
             path: "domains/\(id)/verify"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDomain.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func update(id: String, clickTracking: Bool?, openTracking: Bool?, tls: String?) async throws -> ResendDomain {
@@ -157,21 +101,7 @@ final class DomainClient: DomainClientProtocol {
             path: "domains/\(id)",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDomain.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func delete(id: String) async throws -> ResendDeleteResponse {
@@ -181,20 +111,6 @@ final class DomainClient: DomainClientProtocol {
             method: .DELETE,
             path: "domains/\(id)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDeleteResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 }

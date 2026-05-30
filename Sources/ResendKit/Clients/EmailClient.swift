@@ -28,21 +28,7 @@ final class EmailClient: EmailClientProtocol {
             path: "emails",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendEmailResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func retrieve(id: String) async throws -> ResendEmail {
@@ -52,27 +38,12 @@ final class EmailClient: EmailClientProtocol {
             method: .GET,
             path: "emails/\(id)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendEmail.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func update(id: String, scheduledAt: String) async throws -> ResendEmailResponse {
         let payload = ["scheduled_at": scheduledAt]
         let body = try JSONSerialization.data(withJSONObject: payload)
-
         let request = ResendClient.buildRequest(
             apiKey: apiKey,
             baseURL: baseURL,
@@ -80,21 +51,7 @@ final class EmailClient: EmailClientProtocol {
             path: "emails/\(id)",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendEmailResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func cancel(id: String) async throws -> ResendEmailResponse {
@@ -104,21 +61,7 @@ final class EmailClient: EmailClientProtocol {
             method: .POST,
             path: "emails/\(id)/cancel"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendEmailResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func sendBatch(emails: [ResendEmail]) async throws -> ResendBatchResponse {
@@ -130,20 +73,6 @@ final class EmailClient: EmailClientProtocol {
             path: "emails/batch",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendBatchResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 }

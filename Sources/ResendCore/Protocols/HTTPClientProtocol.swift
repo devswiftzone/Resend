@@ -60,3 +60,27 @@ public enum HTTPMethod: String {
     case DELETE
     case PUT
 }
+
+extension HTTPClientProtocol {
+    /// Execute a request and decode the response, handling API errors
+    /// - Parameters:
+    ///   - request: The HTTP request to execute
+    ///   - decoder: JSON decoder for response parsing
+    /// - Returns: Decoded response of the specified type
+    public func executeAndDecode<T: Decodable>(
+        _ request: HTTPRequest,
+        decoder: JSONDecoder
+    ) async throws -> T {
+        let response = try await execute(request)
+        guard (200...299).contains(response.statusCode) else {
+            if let body = response.body {
+                throw try decoder.decode(ResendRetrieveError.self, from: body)
+            }
+            throw URLError(.badServerResponse)
+        }
+        guard let body = response.body else {
+            throw URLError(.cannotParseResponse)
+        }
+        return try decoder.decode(T.self, from: body)
+    }
+}

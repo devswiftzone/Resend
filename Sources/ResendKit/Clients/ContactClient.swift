@@ -39,21 +39,7 @@ final class ContactClient: ContactClientProtocol {
             path: "audiences/\(audienceId)/contacts",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendContact.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func get(audienceId: String, identifier: String) async throws -> ResendContact {
@@ -63,21 +49,7 @@ final class ContactClient: ContactClientProtocol {
             method: .GET,
             path: "audiences/\(audienceId)/contacts/\(identifier)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendContact.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func list(audienceId: String, limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendContact> {
@@ -100,21 +72,7 @@ final class ContactClient: ContactClientProtocol {
             method: .GET,
             path: path
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendListResponse<ResendContact>.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func update(audienceId: String, identifier: String, firstName: String?, lastName: String?, unsubscribed: Bool?) async throws -> ResendContact {
@@ -137,21 +95,7 @@ final class ContactClient: ContactClientProtocol {
             path: "audiences/\(audienceId)/contacts/\(identifier)",
             body: body
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendContact.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
     public func delete(audienceId: String, identifier: String) async throws -> ResendDeleteResponse {
@@ -161,20 +105,6 @@ final class ContactClient: ContactClientProtocol {
             method: .DELETE,
             path: "audiences/\(audienceId)/contacts/\(identifier)"
         )
-
-        let response = try await httpClient.execute(request)
-
-        guard (200...299).contains(response.statusCode) else {
-            if let body = response.body {
-                throw try ResendClient.decoder.decode(ResendRetrieveError.self, from: body)
-            }
-            throw URLError(.badServerResponse)
-        }
-
-        guard let body = response.body else {
-            throw URLError(.cannotParseResponse)
-        }
-
-        return try ResendClient.decoder.decode(ResendDeleteResponse.self, from: body)
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 }
