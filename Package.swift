@@ -38,6 +38,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.10.0"),
         .package(url: "https://github.com/vapor/vapor.git", from: "4.66.1"),
+        .package(url: "https://github.com/apple/swift-docc-plugin.git", from: "1.4.0"),
     ],
     targets: [
         // Core: Models and protocols (no dependencies)
