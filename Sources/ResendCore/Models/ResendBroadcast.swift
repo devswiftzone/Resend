@@ -7,18 +7,42 @@
 
 import Foundation
 
+/// A broadcast email campaign sent to an audience.
 public struct ResendBroadcast: Codable, Sendable {
+    /// The object type, typically "broadcast"
     public var object: String?
+
+    /// Unique identifier for the broadcast
     public var id: String
+
+    /// Optional name for the broadcast campaign
     public var name: String?
+
+    /// ID of the target audience for this broadcast
     public var audienceId: String?
+
+    /// Sender email address
     public var from: String?
+
+    /// Email subject line
     public var subject: String?
+
+    /// Reply-to email addresses
     public var replyTo: [String]?
+
+    /// Preview text shown alongside the subject line
     public var previewText: String?
+
+    /// Current broadcast status (e.g., "draft", "sending", "sent")
     public var status: String?
+
+    /// Timestamp when the broadcast was created
     public var createdAt: String?
+
+    /// Timestamp when the broadcast is scheduled to send
     public var scheduledAt: String?
+
+    /// Timestamp when the broadcast was sent
     public var sentAt: String?
 
     public init(
@@ -65,7 +89,9 @@ public struct ResendBroadcast: Codable, Sendable {
     }
 }
 
+/// Response from sending a broadcast campaign.
 public struct ResendBroadcastSendResponse: Codable, Sendable {
+    /// Unique identifier for the sent broadcast
     public var id: String
 
     public init(id: String) {

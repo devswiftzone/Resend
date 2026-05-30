@@ -64,8 +64,8 @@ public struct ResendEmail: Codable, Sendable {
 
     /// Custom metadata tags for tracking
     public var tags: [EmailTag]?
-    
-    public init(object: String? = nil, id: String? = nil, createdAt: String? = nil, from: String, to: [String], subject: String, bcc: [String]? = nil, cc: [String]? = nil, replyTo: [String]? = nil, html: String? = nil, text: String? = nil, headers: [String : String]? = nil, attachments: [EmailAttachment]? = nil, tags: [EmailTag]? = nil) {
+
+    public init(object: String? = nil, id: String? = nil, createdAt: String? = nil, from: String, to: [String], subject: String, bcc: [String]? = nil, cc: [String]? = nil, replyTo: [String]? = nil, html: String? = nil, text: String? = nil, headers: [String: String]? = nil, attachments: [EmailAttachment]? = nil, tags: [EmailTag]? = nil) {
         self.object = object
         self.id = id
         self.createdAt = createdAt
@@ -81,7 +81,7 @@ public struct ResendEmail: Codable, Sendable {
         self.attachments = attachments
         self.tags = tags
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case object
         case id

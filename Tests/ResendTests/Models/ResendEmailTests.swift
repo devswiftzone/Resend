@@ -126,7 +126,6 @@ struct ResendEmailTests {
         let data = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let email = try decoder.decode(ResendEmail.self, from: data)
 
         #expect(email.id == "email_123")
@@ -183,6 +182,6 @@ struct ResendEmailTests {
         )
 
         #expect(email.bcc != nil)
-        #expect(email.bcc?.count == 0)
+        #expect(email.bcc?.isEmpty == true)
     }
 }

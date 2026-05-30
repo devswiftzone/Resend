@@ -18,7 +18,6 @@ struct ResendDomainTests {
         let data = json.data(using: .utf8)!
 
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let domain = try decoder.decode(ResendDomain.self, from: data)
 
         #expect(domain.id == "domain_123")

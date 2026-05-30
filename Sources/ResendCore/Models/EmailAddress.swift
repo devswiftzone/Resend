@@ -7,13 +7,21 @@
 
 import Foundation
 
+/// A structured email address with an optional display name.
+///
+/// `EmailAddress` also conforms to `ExpressibleByStringLiteral`, allowing
+/// you to use a plain string where an email address is expected:
+///
+/// ```swift
+/// let address: EmailAddress = "user@example.com"
+/// ```
 public struct EmailAddress: Codable, Sendable {
-    /// format: email
+    /// The email address (e.g., "user@example.com")
     public var email: String
-    
-    /// The name of the person to whom you are sending an email.
+
+    /// Optional display name for the recipient
     public var name: String?
-    
+
     public init(
         email: String,
         name: String? = nil

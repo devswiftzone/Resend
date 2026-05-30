@@ -83,8 +83,8 @@ struct ResendClientTests {
         #expect(jsonString.contains("last_name"))
     }
 
-    @Test("Decoder uses snake_case")
-    func testDecoderUsesSnakeCase() throws {
+    @Test("Decoder works with CodingKeys")
+    func testDecoderWorksWithCodingKeys() throws {
         let json = """
         {
             "first_name": "John",
@@ -95,6 +95,11 @@ struct ResendClientTests {
         struct TestModel: Codable {
             let firstName: String
             let lastName: String
+
+            private enum CodingKeys: String, CodingKey {
+                case firstName = "first_name"
+                case lastName = "last_name"
+            }
         }
 
         let data = json.data(using: .utf8)!

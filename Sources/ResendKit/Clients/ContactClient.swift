@@ -56,6 +56,14 @@ final class ContactClient: ContactClientProtocol {
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
+    public func listAll(audienceId: String, limit: Int? = nil) -> PaginatedSequence<ResendContact> {
+        PaginatedSequence { cursor in
+            let response = try await self.list(audienceId: audienceId, limit: limit, after: cursor, before: nil)
+            let nextCursor = response.data.last?.id
+            return (response.data, response.hasMore, nextCursor)
+        }
+    }
+
     public func list(audienceId: String, limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendContact> {
         var query: [URLQueryItem] = []
         if let limit = limit { query.append(URLQueryItem(name: "limit", value: String(limit))) }

@@ -55,6 +55,14 @@ final class DomainClient: DomainClientProtocol {
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }
 
+    public func listAll(limit: Int? = nil) -> PaginatedSequence<ResendDomain> {
+        PaginatedSequence { cursor in
+            let response = try await self.list(limit: limit, after: cursor, before: nil)
+            let nextCursor = response.data.last?.id
+            return (response.data, response.hasMore, nextCursor)
+        }
+    }
+
     public func list(limit: Int?, after: String?, before: String?) async throws -> ResendListResponse<ResendDomain> {
         var query: [URLQueryItem] = []
         if let limit = limit { query.append(URLQueryItem(name: "limit", value: String(limit))) }

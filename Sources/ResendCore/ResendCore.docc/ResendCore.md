@@ -18,12 +18,17 @@ ResendCore provides the foundational types, models, and protocols used across al
 - ``AudienceClientProtocol``
 - ``ContactClientProtocol``
 - ``BroadcastClientProtocol``
+- ``WebhookClientProtocol``
 
 ### HTTP Types
 
 - ``HTTPRequest``
 - ``HTTPResponse``
 - ``HTTPMethod``
+
+### Pagination
+
+- ``PaginatedSequence``
 
 ### Email Models
 
@@ -52,6 +57,10 @@ ResendCore provides the foundational types, models, and protocols used across al
 
 - ``ResendBroadcast``
 - ``ResendBroadcastSendResponse``
+
+### Webhook Models
+
+- ``ResendWebhook``
 
 ### Common Types
 

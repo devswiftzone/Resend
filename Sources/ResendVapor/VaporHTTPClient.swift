@@ -11,14 +11,20 @@ import ResendCore
 import NIOCore
 import NIOHTTP1
 
-/// Vapor-based HTTP client implementation using AsyncHTTPClient
+/// Vapor-based HTTP client implementation using AsyncHTTPClient.
+///
+/// Used automatically when integrating the Resend SDK with Vapor applications.
+/// Wraps Vapor's `Client` to provide HTTP transport for the Resend API.
 public final class VaporHTTPClient: HTTPClientProtocol {
     private let client: Client
 
+    /// Create a Vapor-based HTTP client.
+    /// - Parameter client: Vapor's `Client` instance, typically from `Request.client` or `Application.client`
     public init(client: Client) {
         self.client = client
     }
 
+    /// Execute an HTTP request using Vapor's async HTTP client.
     public func execute(_ request: HTTPRequest) async throws -> HTTPResponse {
         let uri = URI(string: request.url)
 

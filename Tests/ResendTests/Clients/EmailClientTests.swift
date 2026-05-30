@@ -143,7 +143,7 @@ struct EmailClientTests {
         let mockHTTPClient = MockHTTPClient()
         let errorJSON = """
         {
-            "statusCode": 404,
+            "status_code": 404,
             "message": "Email not found",
             "name": "not_found"
         }

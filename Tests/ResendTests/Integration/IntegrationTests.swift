@@ -98,7 +98,7 @@ struct IntegrationTests {
 
         let errorJSON = """
         {
-            "statusCode": 401,
+            "status_code": 401,
             "message": "Invalid API key",
             "name": "unauthorized"
         }
@@ -113,8 +113,7 @@ struct IntegrationTests {
                 subject: "Test",
                 html: "<p>Test</p>"
             )
-            
-            
+
             return try await resend.email.send(email: email)
         }
 

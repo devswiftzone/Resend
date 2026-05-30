@@ -38,6 +38,18 @@ let response = try await resend.email.send(email: email)
 print("Email sent with ID: \(response.id)")
 ```
 
+### With Retry and Logging
+
+```swift
+import Logging
+
+let resend = ResendClient(
+    apiKey: "re_your_api_key",
+    retry: .default,
+    logger: Logger(label: "resend")
+)
+```
+
 ## Topics
 
 ### Client
@@ -45,38 +57,12 @@ print("Email sent with ID: \(response.id)")
 - ``ResendClient``
 - ``URLSessionHTTPClient``
 
-### Email Operations
+### Webhook Security
 
-Send, retrieve, update, and cancel emails.
+- ``WebhookSignature``
+- ``WebhookVerificationError``
 
-- ``EmailClient``
+### Retry & Reliability
 
-### Domain Management
-
-Manage your sending domains.
-
-- ``DomainClient``
-
-### API Key Management
-
-Create and manage API keys.
-
-- ``APIKeyClient``
-
-### Audience Management
-
-Manage contact audiences.
-
-- ``AudienceClient``
-
-### Contact Management
-
-Manage contacts within audiences.
-
-- ``ContactClient``
-
-### Broadcast Campaigns
-
-Create and send broadcast email campaigns.
-
-- ``BroadcastClient``
+- ``RetryHTTPClient``
+- ``RetryConfiguration``

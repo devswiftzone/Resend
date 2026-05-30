@@ -7,19 +7,29 @@
 
 import Foundation
 
-/// Protocol defining HTTP client capabilities for making API requests
+/// Protocol defining HTTP client capabilities for making API requests.
+///
+/// Implement this protocol to provide custom HTTP transport for the Resend SDK.
+/// The SDK includes built-in implementations using URLSession and Vapor's client.
 public protocol HTTPClientProtocol {
-    /// Execute an HTTP request
+    /// Execute an HTTP request and return the response.
     /// - Parameter request: The HTTP request to execute
     /// - Returns: The HTTP response
     func execute(_ request: HTTPRequest) async throws -> HTTPResponse
 }
 
-/// Represents an HTTP request
+/// Represents an HTTP request to be sent to the Resend API.
 public struct HTTPRequest {
+    /// The full URL for the request
     public let url: String
+
+    /// The HTTP method (GET, POST, PATCH, DELETE, PUT)
     public let method: HTTPMethod
+
+    /// HTTP request headers
     public let headers: [String: String]
+
+    /// The request body data
     public let body: Data?
 
     public init(
@@ -35,10 +45,15 @@ public struct HTTPRequest {
     }
 }
 
-/// Represents an HTTP response
+/// Represents an HTTP response from the Resend API.
 public struct HTTPResponse {
+    /// The HTTP status code
     public let statusCode: Int
+
+    /// Response headers
     public let headers: [String: String]
+
+    /// The response body data
     public let body: Data?
 
     public init(
@@ -52,7 +67,7 @@ public struct HTTPResponse {
     }
 }
 
-/// HTTP methods
+/// HTTP methods used by the Resend API.
 public enum HTTPMethod: String {
     case GET
     case POST
@@ -62,7 +77,14 @@ public enum HTTPMethod: String {
 }
 
 extension HTTPClientProtocol {
-    /// Execute a request and decode the response, handling API errors
+    /// Execute a request and decode the response, handling API errors.
+    ///
+    /// This helper method:
+    /// - Executes the HTTP request
+    /// - Validates the status code (200-299)
+    /// - Decodes the response body into the specified type
+    /// - Throws `ResendRetrieveError` for non-success status codes
+    ///
     /// - Parameters:
     ///   - request: The HTTP request to execute
     ///   - decoder: JSON decoder for response parsing
