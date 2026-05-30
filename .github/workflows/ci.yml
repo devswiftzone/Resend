@@ -13,6 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint
+        run: swiftlint lint --strict
+
   build-macos:
     name: Build & Test (macOS)
     runs-on: macos-15
@@ -48,7 +56,7 @@ jobs:
             -scheme Resend \
             -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=latest" \
             -skipPackagePluginValidation \
-            | xcpretty
+            | xcpretty && exit ${PIPESTATUS[0]}
 
   build-visionos:
     name: Build (visionOS Simulator)
@@ -61,4 +69,4 @@ jobs:
             -scheme Resend \
             -destination "platform=visionOS Simulator,name=Apple Vision Pro,OS=latest" \
             -skipPackagePluginValidation \
-            | xcpretty
+            | xcpretty && exit ${PIPESTATUS[0]}
