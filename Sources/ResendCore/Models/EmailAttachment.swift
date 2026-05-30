@@ -9,43 +9,48 @@ import Foundation
 
 /// A file attachment for an email message.
 ///
-/// Attachments are included as Base64-encoded content in the email payload.
-/// The maximum total attachment size is 40MB.
+/// Attachments can be provided as Base64-encoded content or as a URL path
+/// for the Resend API to fetch. The maximum total attachment size is 40MB.
 ///
-/// ## Example
+/// ## Examples
 ///
 /// ```swift
+/// // Base64-encoded content
 /// let attachment = EmailAttachment(
 ///     content: "base64EncodedString",
-///     filename: "document.pdf",
-///     disposition: "attachment"
+///     filename: "document.pdf"
+/// )
+///
+/// // URL-based attachment
+/// let attachment = EmailAttachment(
+///     filename: "report.pdf",
+///     path: "https://example.com/report.pdf"
 /// )
 /// ```
 public struct EmailAttachment: Codable, Sendable {
 
     /// The Base64 encoded content of the attachment
-    public var content: String
+    public var content: String?
 
     /// The filename of the attachment
-    public var filename: String
+    public var filename: String?
 
-    /// Content-disposition: "attachment" (download) or "inline" (display in email body)
-    public var disposition: String
+    /// URL for the Resend API to fetch the attachment from
+    public var path: String?
+
+    /// MIME type of the attachment (e.g., "application/pdf")
+    public var type: String?
 
     public init(
-        content: String,
-        filename: String,
-        disposition: String = "attachment"
+        content: String? = nil,
+        filename: String? = nil,
+        path: String? = nil,
+        type: String? = nil
     ) {
         self.content = content
         self.filename = filename
-        self.disposition = disposition
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case content
-        case filename
-        case disposition = "path"
+        self.path = path
+        self.type = type
     }
 
 }

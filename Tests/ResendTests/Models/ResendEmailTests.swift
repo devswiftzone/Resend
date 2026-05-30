@@ -37,8 +37,7 @@ struct ResendEmailTests {
     func testFullInitialization() {
         let attachment = EmailAttachment(
             content: "base64content",
-            filename: "test.pdf",
-            disposition: "attachment"
+            filename: "test.pdf"
         )
 
         let tag = EmailTag(name: "category", value: "test")

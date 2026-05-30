@@ -79,7 +79,21 @@ let package = Package(
                 .product(name: "Crypto", package: "swift-crypto"),
             ],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .enableExperimentalFeature("StrictConcurrency"),
+            ]
+        ),
+
+        // Vapor integration tests (requires Vapor dependency)
+        .testTarget(
+            name: "ResendVaporTests",
+            dependencies: [
+                "ResendVapor",
+                "ResendCore",
+                "ResendKit",
+                .product(name: "Vapor", package: "vapor"),
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency"),
             ]
         ),
     ]

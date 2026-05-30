@@ -12,6 +12,10 @@ private struct CreateAudienceRequest: Encodable {
     let name: String
 }
 
+private struct UpdateAudienceRequest: Encodable {
+    let name: String
+}
+
 final class AudienceClient: AudienceClientProtocol {
     private let apiKey: String
     private let httpClient: HTTPClientProtocol
@@ -65,6 +69,18 @@ final class AudienceClient: AudienceClientProtocol {
             method: .GET,
             path: "audiences",
             query: query
+        )
+        return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
+    }
+
+    public func update(id: String, name: String) async throws -> ResendAudience {
+        let body = try ResendClient.encoder.encode(UpdateAudienceRequest(name: name))
+        let request = ResendClient.buildRequest(
+            apiKey: apiKey,
+            baseURL: baseURL,
+            method: .PATCH,
+            path: "audiences/\(id)",
+            body: body
         )
         return try await httpClient.executeAndDecode(request, decoder: ResendClient.decoder)
     }

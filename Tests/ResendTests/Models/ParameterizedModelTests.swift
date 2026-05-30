@@ -7,39 +7,44 @@ import Foundation
 @Suite("EmailAttachment Tests")
 struct EmailAttachmentTests {
 
-    @Test("Basic initialization")
+    @Test("Basic initialization with content")
     func testBasic() {
         let attachment = EmailAttachment(content: "base64", filename: "doc.pdf")
         #expect(attachment.content == "base64")
         #expect(attachment.filename == "doc.pdf")
-        #expect(attachment.disposition == "attachment")
+        #expect(attachment.path == nil)
+        #expect(attachment.type == nil)
     }
 
-    @Test("Custom disposition")
-    func testCustomDisposition() {
-        let attachment = EmailAttachment(content: "base64", filename: "img.png", disposition: "inline")
-        #expect(attachment.disposition == "inline")
+    @Test("URL path attachment")
+    func testURLPath() {
+        let attachment = EmailAttachment(filename: "report.pdf", path: "https://example.com/report.pdf")
+        #expect(attachment.content == nil)
+        #expect(attachment.path == "https://example.com/report.pdf")
     }
 
-    @Test("Encoding uses path key for disposition")
+    @Test("Full initialization with type")
+    func testFull() {
+        let attachment = EmailAttachment(content: "base64", filename: "doc.pdf", path: nil, type: "application/pdf")
+        #expect(attachment.type == "application/pdf")
+    }
+
+    @Test("Encoding to JSON")
     func testEncoding() throws {
-        let attachment = EmailAttachment(content: "base64", filename: "doc.pdf", disposition: "attachment")
+        let attachment = EmailAttachment(content: "base64", filename: "doc.pdf")
         let data = try JSONEncoder().encode(attachment)
         let json = try JSONSerialization.jsonObject(with: data) as? [String: String]
         #expect(json?["content"] == "base64")
         #expect(json?["filename"] == "doc.pdf")
-        #expect(json?["path"] == "attachment")
-        #expect(json?["disposition"] == nil)
     }
 
     @Test("Decoding from JSON")
     func testDecoding() throws {
-        let json = #"{"content":"base64","filename":"doc.pdf","path":"attachment"}"#
+        let json = #"{"content":"base64","filename":"doc.pdf"}"#
         let data = json.data(using: .utf8)!
         let attachment = try JSONDecoder().decode(EmailAttachment.self, from: data)
         #expect(attachment.content == "base64")
         #expect(attachment.filename == "doc.pdf")
-        #expect(attachment.disposition == "attachment")
     }
 
     @Test("Empty content string")
@@ -52,17 +57,25 @@ struct EmailAttachmentTests {
     func testLongFilename() {
         let long = String(repeating: "a", count: 500)
         let attachment = EmailAttachment(content: "base64", filename: long)
-        #expect(attachment.filename.count == 500)
+        #expect(attachment.filename?.count == 500)
     }
 
     @Test("Encode/decode roundtrip")
     func testRoundtrip() throws {
-        let original = EmailAttachment(content: "dGVzdA==", filename: "test.txt", disposition: "inline")
+        let original = EmailAttachment(content: "dGVzdA==", filename: "test.txt")
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(EmailAttachment.self, from: data)
         #expect(decoded.content == original.content)
         #expect(decoded.filename == original.filename)
-        #expect(decoded.disposition == original.disposition)
+    }
+
+    @Test("Encode/decode path-based roundtrip")
+    func testPathRoundtrip() throws {
+        let original = EmailAttachment(filename: "report.pdf", path: "https://example.com/r.pdf")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(EmailAttachment.self, from: data)
+        #expect(decoded.path == original.path)
+        #expect(decoded.filename == original.filename)
     }
 }
 
@@ -526,7 +539,7 @@ struct ResendRetrieveErrorTests {
     @Test("Decoding with snake_case keys")
     func testDecoding() throws {
         let json = """
-        {"status_code": 403, "message": "Forbidden", "name": "permission_error"}
+        {"statusCode": 403, "message": "Forbidden", "name": "permission_error"}
         """
         let data = json.data(using: .utf8)!
         let error = try JSONDecoder().decode(ResendRetrieveError.self, from: data)
