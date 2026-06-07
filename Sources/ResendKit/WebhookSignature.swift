@@ -1,5 +1,9 @@
 import Foundation
+#if canImport(CryptoKit)
 import CryptoKit
+#else
+import Crypto
+#endif
 
 /// Errors that can occur during webhook signature verification.
 public enum WebhookVerificationError: Error, Sendable {
